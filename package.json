@@ -1,0 +1,40 @@
+{
+  "name": "server",
+  "version": "0.1.0",
+  "main": "index.js",
+  "private": "true",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon --experimental-modules server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "dotenv": "^16.0.3",
+    "nodemon": "^2.0.20",
+    "prettier": "^2.7.1"
+  },
+  "dependencies": {
+    "@apollo/server": "^4.1.1",
+    "@graphql-tools/schema": "^9.0.10",
+    "bad-words": "^3.0.4",
+    "bcrypt": "^5.1.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "filipino-badwords-list": "^1.1.2",
+    "graphql": "^16.6.0",
+    "graphql-scalars": "^1.20.1",
+    "graphql-subscriptions": "^2.0.0",
+    "graphql-upload": "^16.0.2",
+    "graphql-ws": "^5.11.2",
+    "jsonwebtoken": "^8.5.1",
+    "mysql2": "^2.3.3",
+    "randomcolor": "^0.6.2",
+    "sequelize": "^6.25.5",
+    "uuid": "^9.0.0",
+    "ws": "^8.11.0"
+  }
+}
