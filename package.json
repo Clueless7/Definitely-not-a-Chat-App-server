@@ -24,6 +24,7 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "express": "^4.18.2",
+    "express-session": "^1.17.3",
     "filipino-badwords-list": "^1.1.2",
     "graphql": "^16.6.0",
     "graphql-scalars": "^1.20.1",
