@@ -926,7 +926,6 @@ const resolvers = {
         action_description: `Has logged out`,
         user_id: user.user_id,
       })
-      res.session.destroy()
       res.clearCookie('refresh-token',{path: '/'})
 
       return true
