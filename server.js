@@ -77,6 +77,7 @@ app.use(
 
 app.post('/refresh_token', async (req, res) => {
   const token = req.cookies['refresh-token']
+  console.log(token)
 
   if (!token) {
     return res.send({
