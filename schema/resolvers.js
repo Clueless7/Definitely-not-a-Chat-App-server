@@ -927,6 +927,7 @@ const resolvers = {
         user_id: user.user_id,
       })
       res.clearCookie('refresh-token',{path: '/'})
+      res.session.destroy()
 
       return true
     },
