@@ -928,6 +928,7 @@ const resolvers = {
       })
       res.session.destroy()
       res.clearCookie('refresh-token')
+      res.redirect('/')
 
       return true
     },
