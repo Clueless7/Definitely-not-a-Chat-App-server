@@ -92,7 +92,6 @@ app.use(express.static("files"));
 app.post("/refresh_token", async (req, res) => {
   const token = req.session.refresh_token;
 
-  console.log(`refresh token on fetch refresh token ${token}`);
   if (!token) {
     return res.send({
       message: "Refresh Token does not exist",
@@ -101,8 +100,6 @@ app.post("/refresh_token", async (req, res) => {
   }
 
   let data;
-
-  console.log(`data from refresh token ${data}`);
 
   try {
     data = jwt.verify(token, process.env.REFRESH_SECRET);
@@ -114,8 +111,6 @@ app.post("/refresh_token", async (req, res) => {
   }
 
   const user = await Users.findOne({ where: { id: data.user_id } });
-
-  console.log(`user from refresh token data ${user}`);
 
   if (!user) {
     res.send({
