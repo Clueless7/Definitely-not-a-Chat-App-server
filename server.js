@@ -81,7 +81,7 @@ app.use(
     cookie: {
       httpOnly: true,
       // secure: true,
-      // sameSite: 'none',
+      sameSite: 'none',
       maxAge: 604800,
     },
   }),
