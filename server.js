@@ -15,7 +15,7 @@ import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHt
 import { useServer } from "graphql-ws/lib/use/ws";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { PubSub } from "graphql-subscriptions";
-import redis from "./config/redis.js";
+import { redis } from "./config/redis.js";
 import connectRedis from "connect-redis";
 import session from "express-session";
 
