@@ -65,6 +65,7 @@ const server = new ApolloServer({
 
 await server.start()
 
+app.set('trust proxy', 1)
 app.use(
   cors({
     credentials: true,
@@ -83,7 +84,7 @@ app.use(
     cookie: {
       httpOnly: true,
       sameSite: 'none',
-      // secure: true,
+      secure: true,
       maxAge: 1000 * 60 * 60 * 24 * 7,
     },
   })
