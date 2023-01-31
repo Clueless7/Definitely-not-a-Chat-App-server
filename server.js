@@ -68,9 +68,14 @@ await server.start();
 app.use(
   cors({
     credentials: true,
-    origin: [`${CLIENT_URL}`],
+    origin: [
+      `${CLIENT_URL}`,
+      "https://definitely-not-a-chat-app-client.onrender.com",
+    ],
   })
 );
+
+console.log(CLIENT_URL);
 app.use(
   session({
     store: new RedisStore({ client: redis }),
