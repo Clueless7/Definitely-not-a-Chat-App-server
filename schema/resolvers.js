@@ -888,6 +888,7 @@ const resolvers = {
 
       console.log(refreshToken);
 
+      console.log(req.session);
       req.session.refresh_token = refreshToken;
       req.session.user_id = 1;
       req.session.group_id = 1;

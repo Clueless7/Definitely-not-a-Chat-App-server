@@ -92,6 +92,7 @@ app.post("/refresh_token", async (req, res) => {
   const token = req.session.refresh_token;
 
   console.log(req.session);
+  console.log(req.session.cookie);
 
   if (!token) {
     return res.send({
