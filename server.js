@@ -80,9 +80,8 @@ app.use(
     resave: false,
     cookie: {
       httpOnly: true,
-      secure: true,
-      path: "/",
-      sameSite: "none",
+      // secure: true,
+      // sameSite: "none",
       maxAge: 1000 * 60 * 24 * 7,
     },
   }),
