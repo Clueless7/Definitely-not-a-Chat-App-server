@@ -65,18 +65,18 @@ const server = new ApolloServer({
 
 await server.start()
 
-app.use(express.static('files'))
-
 app.use(
   cors({
     credentials: true,
     origin: [`${CLIENT_URL}`],
-  }),
+  })
+)
+app.use(
   session({
     store: new RedisStore({ client: redis }),
     name: 'session',
     secret: process.env.COOKIE_SECRET,
-    saveUninitialized: true,
+    saveUninitialized: false,
     resave: false,
     cookie: {
       httpOnly: true,
@@ -84,9 +84,10 @@ app.use(
       sameSite: 'none',
       maxAge: 604800,
     },
-  }),
-  json()
+  })
 )
+app.use(json())
+app.use(express.static('files'))
 
 app.post('/refresh_token', async (req, res) => {
   const token = req.session.refresh_token
