@@ -865,7 +865,7 @@ const resolvers = {
         userchat_id,
       });
     },
-    login: async (_, { username, password }, { res, req }) => {
+    login: async (_, { username, password }, context) => {
       const user = await Users.findOne({
         where: { username },
       });
@@ -888,17 +888,17 @@ const resolvers = {
 
       console.log(refreshToken);
 
-      console.log(req.session);
+      console.log(context.req.session);
       console.log("req session in resolver^");
-      req.session.refresh_token = refreshToken;
-      req.session.user_id = 1;
-      req.session.group_id = 1;
-      req.session.section = 1;
+      context.req.session.refresh_token = refreshToken;
+      context.req.session.user_id = 1;
+      context.req.session.group_id = 1;
+      context.req.session.section = 1;
 
-      req.session.save();
+      context.req.session.save();
 
-      console.log(req.session);
-      console.log(req.session.refresh_token);
+      console.log(context.req.session);
+      console.log(context.req.session.refresh_token);
 
       const userSection = await Sections.findOne({
         where: { id: user.section_id },
