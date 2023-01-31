@@ -15,7 +15,7 @@ import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHt
 import { useServer } from "graphql-ws/lib/use/ws";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { PubSub } from "graphql-subscriptions";
-import { redis } from "./config/redis.js";
+import redis from "./config/redis.js";
 import connectRedis from "connect-redis";
 import session from "express-session";
 
@@ -65,18 +65,13 @@ const server = new ApolloServer({
 
 await server.start();
 
+app.use(express.static("files"));
+
 app.use(
   cors({
     credentials: true,
-    origin: [
-      `${CLIENT_URL}`,
-      "https://definitely-not-a-chat-app-client.onrender.com",
-    ],
-  })
-);
-
-console.log(CLIENT_URL);
-app.use(
+    origin: [`${CLIENT_URL}`],
+  }),
   session({
     store: new RedisStore({ client: redis }),
     name: "session",
@@ -85,14 +80,13 @@ app.use(
     resave: false,
     cookie: {
       httpOnly: true,
-      secure: true,
-      sameSite: false,
+      // secure: true,
+      // sameSite: "none",
       maxAge: 604800,
     },
-  })
+  }),
+  json()
 );
-app.use(json());
-app.use(express.static("files"));
 
 app.post("/refresh_token", async (req, res) => {
   const token = req.session.refresh_token;
@@ -105,7 +99,6 @@ app.post("/refresh_token", async (req, res) => {
   }
 
   let data;
-
   try {
     data = jwt.verify(token, process.env.REFRESH_SECRET);
   } catch (err) {
@@ -130,10 +123,7 @@ app.post("/refresh_token", async (req, res) => {
       accessToken: "",
     });
   }
-
-  const newRefreshToken = signRefreshToken(user);
-
-  req.session.refresh_token = newRefreshToken;
+  req.session.refresh_token = signRefreshToken(user);
 
   return res.send({ accessToken: signAccessToken(user) });
 });

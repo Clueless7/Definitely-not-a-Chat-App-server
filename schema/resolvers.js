@@ -865,7 +865,7 @@ const resolvers = {
         userchat_id,
       });
     },
-    login: async (_, { username, password }, { res, req }) => {
+    login: async (_, { username, password }, { req }) => {
       const user = await Users.findOne({
         where: { username },
       });
@@ -884,14 +884,11 @@ const resolvers = {
         throw new GraphQLError("Username or password does not match");
       }
 
-      const refreshToken = signRefreshToken(user);
-
-      req.session.refresh_token = refreshToken;
+      req.session.refresh_token = signRefreshToken(user);
 
       const userSection = await Sections.findOne({
         where: { id: user.section_id },
       });
-      res.send(req.session.refresh_token);
 
       await UserLogs.create({
         full_name: `${user.first_name} ${user.last_name}`,
