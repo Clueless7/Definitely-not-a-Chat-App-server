@@ -888,7 +888,7 @@ const resolvers = {
 
       context.req.session.refresh_token = refreshToken
       context.req.session.save()
-      context.res.status(400)
+      context.res.status(200)
 
       const userSection = await Sections.findOne({
         where: { id: user.section_id },
