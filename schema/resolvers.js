@@ -897,8 +897,6 @@ const resolvers = {
         user_id: user.id,
       });
 
-      res.send(req.session.refresh_token);
-
       return { access_token: signAccessToken(user) };
     },
     revokeRefreshToken: async (_, { user_id }, context) => {
