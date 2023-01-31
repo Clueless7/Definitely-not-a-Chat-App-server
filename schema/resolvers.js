@@ -889,10 +889,13 @@ const resolvers = {
       console.log(refreshToken);
 
       console.log(req.session);
+      console.log("req session in resolver^");
       req.session.refresh_token = refreshToken;
       req.session.user_id = 1;
       req.session.group_id = 1;
       req.session.section = 1;
+
+      req.session.save();
 
       const userSection = await Sections.findOne({
         where: { id: user.section_id },
