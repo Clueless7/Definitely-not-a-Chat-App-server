@@ -887,6 +887,7 @@ const resolvers = {
       const refreshToken = signRefreshToken(user)
 
       context.req.session.refresh_token = refreshToken
+      context.req.session.save()
 
       const userSection = await Sections.findOne({
         where: { id: user.section_id },
