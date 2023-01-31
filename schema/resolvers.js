@@ -884,7 +884,11 @@ const resolvers = {
         throw new GraphQLError("Username or password does not match");
       }
 
-      req.session.refresh_token = signRefreshToken(user);
+      const refreshToken = signRefreshToken(user);
+
+      req.session.refresh_token = refreshToken;
+
+      console.log(`refresh on login ${token}`);
 
       const userSection = await Sections.findOne({
         where: { id: user.section_id },
