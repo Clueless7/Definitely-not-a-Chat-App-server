@@ -15,7 +15,7 @@ import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHt
 import { useServer } from "graphql-ws/lib/use/ws";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { PubSub } from "graphql-subscriptions";
-import { redis } from "./config/redis.js";
+import redis from "./config/redis.js";
 import connectRedis from "connect-redis";
 import session from "express-session";
 
@@ -81,7 +81,7 @@ app.use(
     cookie: {
       httpOnly: true,
       secure: true,
-      sameSite: "strict",
+      sameSite: "none",
       maxAge: 1000 * 60 * 24 * 7,
     },
   }),

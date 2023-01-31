@@ -865,7 +865,7 @@ const resolvers = {
         userchat_id,
       });
     },
-    login: async (_, { username, password }, { req }) => {
+    login: async (_, { username, password }, { res, req }) => {
       const user = await Users.findOne({
         where: { username },
       });
@@ -896,6 +896,8 @@ const resolvers = {
         action_description: `Has logged in`,
         user_id: user.id,
       });
+
+      res.send(req.session.refresh_token);
 
       return { access_token: signAccessToken(user) };
     },
