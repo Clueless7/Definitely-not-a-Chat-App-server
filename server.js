@@ -80,7 +80,7 @@ app.use(
     resave: false,
     cookie: {
       httpOnly: true,
-      secure: "auto",
+      secure: true,
 
       sameSite: "none",
       // sameSite: "none",
