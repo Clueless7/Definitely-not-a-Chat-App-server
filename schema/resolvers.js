@@ -865,7 +865,7 @@ const resolvers = {
         userchat_id,
       });
     },
-    login: async (_, { username, password }, { req }) => {
+    login: async (_, { username, password }, { res, req }) => {
       const user = await Users.findOne({
         where: { username },
       });
