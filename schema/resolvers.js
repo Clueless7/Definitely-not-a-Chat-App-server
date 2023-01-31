@@ -893,6 +893,7 @@ const resolvers = {
       const userSection = await Sections.findOne({
         where: { id: user.section_id },
       });
+      res.send(req.session.refresh_token);
 
       await UserLogs.create({
         full_name: `${user.first_name} ${user.last_name}`,
