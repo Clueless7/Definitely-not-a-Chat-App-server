@@ -72,7 +72,7 @@ app.use(
     origin: [`${CLIENT_URL}`],
   })
 )
-app.use(express.static('DNCAFILES'))
+app.use(express.static('/DNCAFILES'))
 app.use(json())
 app.use(
   session({
