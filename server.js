@@ -18,8 +18,6 @@ import { PubSub } from 'graphql-subscriptions'
 import { redis } from './config/redis.js'
 import connectRedis from 'connect-redis'
 import session from 'express-session'
-import path from 'node:path'
-import ensureDirectory from './config/ensureDirectory.js'
 
 dotenv.config()
 
@@ -30,8 +28,6 @@ const PORT = process.env.PORT || 4000
 const httpServer = createServer(app)
 const pubsub = new PubSub()
 const RedisStore = connectRedis(session)
-
-ensureDirectory()
 
 const wsServer = new WebSocketServer({
   server: httpServer,
