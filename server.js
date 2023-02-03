@@ -18,6 +18,7 @@ import { PubSub } from 'graphql-subscriptions'
 import { redis } from './config/redis.js'
 import connectRedis from 'connect-redis'
 import session from 'express-session'
+import path from 'node:path'
 
 dotenv.config()
 
@@ -72,7 +73,7 @@ app.use(
     origin: [`${CLIENT_URL}`],
   })
 )
-app.use(express.static('/DNCAFILES'))
+app.use(express.static(path.resolve('/DNCAFILES'))) // Should be the absolute path on the server
 app.use(json())
 app.use(
   session({
