@@ -618,12 +618,12 @@ const resolvers = {
         let messageType = ''
         if (file) {
           const { createReadStream, filename, mimetype } = await file
-          let filepath = '../DNCAFILES'
+          let filepath = '/DNCAFILES'
           if (mimetype.includes('image')) {
-            filepath = '../DNCAFILES/message/images'
+            filepath = '/DNCAFILES/message/images'
             messageType = 'IMAGE'
           } else {
-            filepath = '../DNCAFILES/message/documents'
+            filepath = '/DNCAFILES/message/documents'
             messageType = 'OTHER'
           }
 
@@ -631,9 +631,7 @@ const resolvers = {
 
           await new Promise((res) =>
             createReadStream()
-              .pipe(
-                createWriteStream(path.join('__dirname', filepath, newFileName))
-              )
+              .pipe(createWriteStream(path.join(filepath, newFileName)))
               .on('close', res)
           )
 
@@ -1129,14 +1127,12 @@ const resolvers = {
 
       if (group_picture) {
         const { createReadStream, filename } = await group_picture
-        let filepath = '../DNCAFILES/grouppfp'
+        let filepath = '/DNCAFILES/grouppfp'
         let newFileName = `${uuid()} ${filename}`
 
         await new Promise((res) =>
           createReadStream()
-            .pipe(
-              createWriteStream(path.join('__dirname', filepath, newFileName))
-            )
+            .pipe(createWriteStream(path.join(filepath, newFileName)))
             .on('close', res)
         )
         await Groups.update(
@@ -1253,12 +1249,12 @@ const resolvers = {
 
       if (profile_img) {
         const { createReadStream, filename } = await profile_img
-        let filepath = '../DNCAFILES/pfp'
+        let filepath = '/DNCAFILES/pfp'
         newImage = `${uuid()} ${filename}`
 
         await new Promise((res) =>
           createReadStream()
-            .pipe(createWriteStream(path.join('__dirname', filepath, newImage)))
+            .pipe(createWriteStream(path.join(filepath, newImage)))
             .on('close', res)
         )
       }
@@ -1541,12 +1537,12 @@ const resolvers = {
       let newImage = initialUser.profile_img
       if (userData.profile_img) {
         const { createReadStream, filename } = await userData.profile_img
-        let filepath = '../DNCAFILES/pfp'
+        let filepath = '/DNCAFILES/pfp'
         newImage = `${uuid()} ${filename}`
 
         await new Promise((res) =>
           createReadStream()
-            .pipe(createWriteStream(path.join('__dirname', filepath, newImage)))
+            .pipe(createWriteStream(path.join(filepath, newImage)))
             .on('close', res)
         )
       }
