@@ -1152,7 +1152,7 @@ const resolvers = {
       const actionUser = await Users.findOne({ where: { id: user.user_id } })
 
       const actionUserSection = await Sections.findOne({
-        where: { id: actionUser.id },
+        where: { id: actionUser.section_id },
       })
 
       await UserLogs.create({
