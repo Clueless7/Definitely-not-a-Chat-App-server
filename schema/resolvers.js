@@ -865,8 +865,15 @@ const resolvers = {
       })
     },
     login: async (_, { username, password }, context) => {
-      rateLimitMiddleware(context)
-      console.log('hello')
+      try {
+        rateLimitMiddleware(context)
+        
+      } catch (error) {
+        console.log(error)
+        console.log('catched error')
+      throw new GraphQLError(error.message)
+      }
+
 
       const user = await Users.findOne({
         where: { username },
