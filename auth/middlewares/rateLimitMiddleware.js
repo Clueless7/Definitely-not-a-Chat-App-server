@@ -1,4 +1,3 @@
-import { GraphQLError } from 'graphql'
 import { redis } from '../../config/redis.js'
 
 const rateLimitMiddleware = async (context) => {
@@ -13,7 +12,7 @@ const rateLimitMiddleware = async (context) => {
   if (currentRate > limit) {
     // await redis.expire(key, 60 * 20)
     console.log('limite reached')
-    throw new GraphQLError('You have reached the limit for logging in, please try again in 20 minutes')
+    throw new Error('You have reached the limit for logging in, please try again in 20 minutes')
   }
 }
 
