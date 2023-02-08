@@ -868,13 +868,14 @@ const resolvers = {
 
       const rateLimitCheck = await rateLimitMiddleware(context)
 
-      const user = await Users.findOne({
-        where: { username },
-      })
-
       if(rateLimitCheck){
         throw new GraphQLError(rateLimitCheck)
       }
+
+      const user = await Users.findOne({
+        where: { username },
+      })
+      
 
       if (!user) {
         throw new GraphQLError('Username or password does not match')

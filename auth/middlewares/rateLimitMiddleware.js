@@ -5,7 +5,7 @@ const rateLimitMiddleware = async (context) => {
 
   const key = `rate limit for ${req.ip}`
 
-  let limit = 5
+  const limit = 5
   const currentRate = await redis.incr(key)
 
   if (currentRate > limit) {
