@@ -9,6 +9,7 @@ const rateLimitMiddleware = async (context) => {
   const limit = 5
   const currentRate = await redis.incr(key)
 
+  console.log('hi')
   if (currentRate > limit) {
     // await redis.expire(key, 60 * 20)
     console.log('limite reached')
