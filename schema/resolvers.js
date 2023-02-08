@@ -866,7 +866,7 @@ const resolvers = {
     },
     login: async (_, { username, password }, context) => {
 
-      const rateLimitCheck = rateLimitMiddleware(context)
+      const rateLimitCheck = await rateLimitMiddleware(context)
 
       const user = await Users.findOne({
         where: { username },
