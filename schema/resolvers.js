@@ -867,7 +867,7 @@ const resolvers = {
     login: async (_, { username, password }, context) => {
 
       rateLimitMiddleware(context).catch(err=>{
-        throw new GraphQLError(err)
+        throw new GraphQLError(err.message)
       })
 
       const user = await Users.findOne({
