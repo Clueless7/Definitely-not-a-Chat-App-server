@@ -10,6 +10,8 @@ const rateLimitMiddleware = async (context) => {
 
   if (currentRate > limit) {
     await redis.expire(key, 60 * 20)
+
+    console.log('expired')
     throw new Error('You have reached the limit for logging in, please try again in 20 minutes')
   }
 }
