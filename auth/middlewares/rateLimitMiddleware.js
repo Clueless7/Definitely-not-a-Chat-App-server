@@ -1,19 +1,27 @@
 import { redis } from '../../config/redis.js'
 
 const rateLimitMiddleware = async (context) => {
-  const { req } = context
 
-  const key = `rate limit for ${req.ip}`
+  try {
+    const { req } = context
 
-  const limit = 5
-  const currentRate = await redis.incr(key)
+    const key = `rate limit for ${req.ip}`
 
-  if (currentRate > limit) {
-    await redis.expire(key, 60 * 20)
+    const limit = 5
+    const currentRate = await redis.incr(key)
 
-    console.log('expired')
-    throw new Error('You have reached the limit for logging in, please try again in 20 minutes')
+    if (currentRate > limit) {
+      await redis.expire(key, 60 * 20)
+
+      console.log('expired')
+      throw new Error('You have reached the limit for logging in, please try again in 20 minutes')
+    }
+  } catch (error) {
+
+    console.log('error Catched')
+    console.log(error)
   }
+  
 }
 
 export { rateLimitMiddleware }
