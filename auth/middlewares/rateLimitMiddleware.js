@@ -11,9 +11,10 @@ const rateLimitMiddleware = async (context) => {
 
   if (currentRate > limit) {
     await redis.expire(key, 60 * 20)
-    console.log('limite')
-    throw new GraphQLError('You have reached the limit for logging in, please try again in 20 minutes')
+    return {limitReached: true, message: 'You have reached the limit for logging in, please try again in 20 minutes'}
   }
+
+  return {limitReached:false}
 }
 
 export { rateLimitMiddleware }
