@@ -869,7 +869,7 @@ const resolvers = {
       const checkLimit = await rateLimitMiddleware(context)
 
       if(checkLimit.limitReached === true){
-        throw new GraphQLError(checkLimit.message)
+        throw new GraphQLError('You have reached the limit for logging in, please try again in 20 minutes')
       }
 
       const user = await Users.findOne({
