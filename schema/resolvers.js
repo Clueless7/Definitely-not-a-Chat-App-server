@@ -873,7 +873,7 @@ const resolvers = {
       })
 
       
-      if(checkLimit.limitReached){
+      if(checkLimit.limitReached === true){
         throw new GraphQLError(checkLimit.message)
       }
       
