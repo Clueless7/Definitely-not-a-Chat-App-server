@@ -362,7 +362,6 @@ const resolvers = {
         return userlog
       })
 
-      console.log(userLogs)
       console.log(filterWords)
 
       return filterWords
