@@ -350,10 +350,12 @@ const resolvers = {
     userLogs: async (_, { limit, offset }, context) => {
       const { data: user } = authMiddleware(context)
 
+      console.log(offset)
+
       const userLogs = await UserLogs.findAll({
         order: [['createdAt', 'DESC']],
         limit,
-        offset: offset * 10,
+        offset: offset,
       })
 
       const filterWords = userLogs.map((userlog) => {
@@ -362,7 +364,6 @@ const resolvers = {
         return userlog
       })
 
-      console.log(filterWords)
 
       return filterWords
     },
