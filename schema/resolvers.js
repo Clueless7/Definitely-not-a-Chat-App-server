@@ -338,19 +338,19 @@ const resolvers = {
         return kvUsers
       }
     },
-    adminLogs: async (_, __, context) => {
+    adminLogs: async (_, {limit, offset}, context) => {
       const { data: user } = authMiddleware(context)
 
       const adminLogs = await AdminLogs.findAll({
         order: [['createdAt', 'DESC']],
+        limit,
+        offset: offset,
       })
 
       return adminLogs
     },
     userLogs: async (_, { limit, offset }, context) => {
       const { data: user } = authMiddleware(context)
-
-      console.log(offset)
 
       const userLogs = await UserLogs.findAll({
         order: [['createdAt', 'DESC']],

@@ -257,7 +257,7 @@ const typeDefs = `
     userProfile(id: Int!): User
     addMemberList(group_id: Int, form: String): [KvUser]
     userLogs(limit: Int, offset: Int): [UserLog]
-    adminLogs: [AdminLog]
+    adminLogs(limit: Int, offset: Int): [AdminLog]
     currentUserGroupRoles(group_id:Int): CurrentUserGroupRoles
     otherUser(group_id: Int): User
     groupRolesList(group_id: Int): [GroupRole]
