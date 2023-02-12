@@ -362,6 +362,9 @@ const resolvers = {
         return userlog
       })
 
+      console.log(userLogs)
+      console.log(filterWords)
+
       return filterWords
     },
     currentUserGroupRoles: async (_, { group_id }, context) => {
