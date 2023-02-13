@@ -78,7 +78,7 @@ const createAssociation = async () => {
 
 const syncModels = async () => {
   try {
-    await DB.sync()
+    await DB.sync({alter:true})
   } catch (error) {
     console.log(error)
   }

@@ -34,6 +34,8 @@ const typeDefs = `
     receiver: Int
     message_type: MessageType!
     createdAt: DateTime!
+    senderImage: String!
+    unfilteredMessage: String
   }
 
   enum MessageType {
@@ -47,6 +49,7 @@ const typeDefs = `
     group_name: String!
     group_picture: String!
     is_group: String!
+    has_threat: Boolean!
   }
 
   type UserGroup {
@@ -107,6 +110,11 @@ const typeDefs = `
     createdAt: DateTime!
     remarks: String
     date_resolved: DateTime
+  }
+
+  type ReportsAndThreats{
+    chat_with_threat: [Group]
+    reports: [Report]
   }
   
   type Section{
@@ -192,6 +200,7 @@ const typeDefs = `
     group_data: Group
     allMembers: [User]
     roleMembers: [RoleMembers]
+    chat_messages: [UserChat]
   }
 
   type RegisterResponse{
@@ -203,6 +212,11 @@ const typeDefs = `
     title: String
     value: Int
     color: String
+  }
+
+  type ChatThreatDetectedReponse{
+    current_user: User
+    group: Group
   }
 
   input RegisterInput{
@@ -262,7 +276,7 @@ const typeDefs = `
     otherUser(group_id: Int): User
     groupRolesList(group_id: Int): [GroupRole]
     userGroupRoles(user_id:Int ,group_id:Int): [Int]
-    reports: [Report]
+    reports: ReportsAndThreats
     report(report_id: Int): ReportResponse
     reportedChat(group_id: Int!): ReportedChatDetails
     sections: [Section]
@@ -295,6 +309,7 @@ const typeDefs = `
     createSection(section_name: String!): Section
     toggleSectionStatus(section_id: Int, status: Boolean): Section
     updateSection(section_id: Int, section_name: String!): Section
+    clearChatThreat(group_id: Int): Boolean
   }
 
   
@@ -305,8 +320,9 @@ const typeDefs = `
     chatAdded(user: Int): UserChat
     memberAdded(user: Int, group_id: Int): MemberAddedResponse
     memberRemoved(user: Int, group_id: Int): MemberRemovedResponse
-    groupRolesUpdated(user: Int, group_id: Int): GroupRolesUpdatedResponse
+    groupRolesUpdated(user: Int, group_id: Int) : GroupRolesUpdatedResponse
     memberRolesUpdated(user:Int, group_id: Int) : UpdateUserGroupRolesResponse
+    chatThreatDetected : ChatThreatDetectedReponse
   }
 
 `

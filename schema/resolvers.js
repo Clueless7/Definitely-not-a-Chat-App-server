@@ -50,6 +50,25 @@ const resolvers = {
 
       return age
     },
+    hasNotif: async ({ access_level }) => {
+      const hasThreat = await Groups.findAll({ where: { has_threat: true } })
+
+      const hasReport = await Reports.findAll({ where: { is_resolved: false } })
+
+      if (access_level === 'ADMIN' && hasThreat.length + hasReport.length > 0)
+        return true
+      return false
+    },
+  },
+  UserChat: {
+    senderImage: async ({ user_id }) => {
+      const user = await Users.findOne({ where: { id: user_id } })
+      return user.profile_img
+    },
+    message: ({ message }) => {
+      return filter.clean(message)
+    },
+    unfilteredMessage: ({ message }) => message,
   },
   GraphData: {
     color: () => {
@@ -163,12 +182,7 @@ const resolvers = {
         where: { receiver: groupIds },
       })
 
-      const filteredUserChats = userChats.map((userchat) => {
-        userchat.message = filter.clean(userchat.message)
-        return userchat
-      })
-
-      return filteredUserChats
+      return userChats
     },
     groups: async (_, { limit, offset }, context) => {
       const { data: user } = authMiddleware(context)
@@ -298,8 +312,6 @@ const resolvers = {
           if (!latestchat) {
             return null
           }
-          latestchat.message
-          latestchat.message = filter.clean(latestchat.message)
           return latestchat
         })
         .filter((userchat) => userchat !== null)
@@ -441,6 +453,8 @@ const resolvers = {
       const userChats = await UserChats.findAll()
       const reports = await Reports.findAll()
 
+      const groupsWithThreat = groups.filter((group) => group.has_threat)
+
       const filterReports = reports.filter(
         (report) => report.is_resolved === false
       )
@@ -453,7 +467,7 @@ const resolvers = {
         userCount: users.length,
         groupCount: groups.length,
         userChatsCount: userChats.length,
-        pendingReportCount: filterReports.length,
+        pendingReportCount: filterReports.length + groupsWithThreat.length,
         latestAdminLog: adminLog,
       }
     },
@@ -485,7 +499,14 @@ const resolvers = {
 
       const reports = await Reports.findAll()
 
-      return reports
+      const chat_with_threat = await Groups.findAll({
+        where: { has_threat: true },
+      })
+
+      return {
+        chat_with_threat,
+        reports,
+      }
     },
     report: async (_, { report_id }, context) => {
       authMiddleware(context)
@@ -541,10 +562,26 @@ const resolvers = {
         })
       )
 
+      const chat_messages = await UserChats.findAll({
+        where: { receiver: group_id },
+      })
+
+      const origChats = chat_messages.map((message) => {
+        return {
+          id: message.id,
+          message: message.message,
+          user_id: message.user_id,
+          receiver: message.receiver,
+          createdAt: message.createdAt,
+          message_type: message.message_type,
+        }
+      })
+
       return {
         group_data,
         allMembers,
         roleMembers,
+        chat_messages: origChats,
       }
     },
     sections: async (_, __, context) => {
@@ -673,6 +710,14 @@ const resolvers = {
         } else {
           if (message !== '') {
           }
+
+          const newChatFilter = new Filter({
+            list: filipinoBadWords.array,
+            placeHolder: '@@@!@!@',
+          })
+
+          const filterMessage = newChatFilter.clean(message)
+
           const userChat = await UserChats.create({
             message,
             user_id: user.user_id,
@@ -702,6 +747,25 @@ const resolvers = {
           pubsub.publish('CHAT_ADDED', {
             chatAdded: userChat.dataValues,
           })
+
+          if (filterMessage.includes('@@@!@!@')) {
+            await Groups.update(
+              { has_threat: true },
+              { where: { id: group.id } }
+            )
+
+            const updatedGroupWithThreat = await Groups.findOne({
+              where: { id: group.id },
+            })
+
+            pubsub.publish('CHAT_THREAT_DETECTED', {
+              chatThreatDetected: {
+                current_user: actionUser,
+                group: updatedGroupWithThreat,
+              },
+            })
+          }
+
           return userChat
         }
       } else {
@@ -1654,6 +1718,21 @@ const resolvers = {
 
       return updatedSection
     },
+    clearChatThreat: async (_, { group_id }, context) => {
+      const { data: user } = authMiddleware(context)
+
+      const actionUser = await Users.findOne({ where: { id: user.user_id } })
+
+      await Groups.update({ has_threat: false }, { where: { id: group_id } })
+
+      await AdminLogs.create({
+        full_name: `${actionUser.first_name} ${actionUser.last_name}`,
+        action_description: `Has marked chat ${group_id} clear for threats`,
+        user_id: actionUser.id,
+      })
+
+      return false
+    },
   },
   Subscription: {
     memberRolesUpdated: {
@@ -1782,6 +1861,17 @@ const resolvers = {
           if (userGroup) {
             return true
           }
+          return false
+        }
+      ),
+    },
+    chatThreatDetected: {
+      subscribe: withFilter(
+        (_, __, { pubsub }) => pubsub.asyncIterator('CHAT_THREAT_DETECTED'),
+        async (payload, variables) => {
+          const user = await Users.findOne({ where: { id: variables.user } })
+
+          if (user.access_level === 'ADMIN') return true
           return false
         }
       ),

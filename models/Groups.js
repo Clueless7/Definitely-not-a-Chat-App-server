@@ -28,6 +28,11 @@ const Groups = DB.define(
       type: DataTypes.DATE,
       allowNull: false,
     },
+    has_threat: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
   },
   { timestamps: false }
 )
