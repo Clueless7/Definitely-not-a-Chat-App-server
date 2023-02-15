@@ -60,6 +60,22 @@ const resolvers = {
       return false
     },
   },
+  Group: {
+    pm_name: async ({ id }, __, context) => {
+      const { data: user } = authMiddleware(context)
+      const userGroup = await UserGroups.findAll({ where: { group_id: id } })
+
+      const otherUserId = userGroup.filter(
+        (usergroup) => usergroup.user_id !== user.user_id
+      )
+
+      const otherUser = await Users.findOne({
+        where: { id: otherUserId[0].user_id },
+      })
+
+      return `${otherUser.first_name} ${otherUser.last_name}`
+    },
+  },
   UserChat: {
     senderImage: async ({ user_id }) => {
       const user = await Users.findOne({ where: { id: user_id } })
@@ -350,13 +366,13 @@ const resolvers = {
         return kvUsers
       }
     },
-    adminLogs: async (_, {limit, offset}, context) => {
+    adminLogs: async (_, { limit, offset }, context) => {
       const { data: user } = authMiddleware(context)
 
       const adminLogs = await AdminLogs.findAll({
         order: [['createdAt', 'DESC']],
         limit,
-        offset: offset,
+        offset,
       })
 
       return adminLogs
@@ -367,7 +383,7 @@ const resolvers = {
       const userLogs = await UserLogs.findAll({
         order: [['createdAt', 'DESC']],
         limit,
-        offset: offset,
+        offset,
       })
 
       const filterWords = userLogs.map((userlog) => {
@@ -375,7 +391,6 @@ const resolvers = {
 
         return userlog
       })
-
 
       return filterWords
     },
@@ -659,12 +674,12 @@ const resolvers = {
         let messageType = ''
         if (file) {
           const { createReadStream, filename, mimetype } = await file
-          let filepath = '/DNCAFILES'
+          let filepath = '../files'
           if (mimetype.includes('image')) {
-            filepath = '/DNCAFILES/message/images'
+            filepath = '../files/message/images'
             messageType = 'IMAGE'
           } else {
-            filepath = '/DNCAFILES/message/documents'
+            filepath = '../files/message/documents'
             messageType = 'OTHER'
           }
 
@@ -672,7 +687,9 @@ const resolvers = {
 
           await new Promise((res) =>
             createReadStream()
-              .pipe(createWriteStream(path.join(filepath, newFileName)))
+              .pipe(
+                createWriteStream(path.join('__dirname', filepath, newFileName))
+              )
               .on('close', res)
           )
 
@@ -932,17 +949,16 @@ const resolvers = {
       })
     },
     login: async (_, { username, password }, context) => {
-      
-      const checkLimit = await rateLimitMiddleware(context)
-
+      // const rateLimitCheck = await rateLimitMiddleware(context)
 
       const user = await Users.findOne({
         where: { username },
       })
-
-      if(checkLimit.limitReached === true){
-        throw new GraphQLError('You have reached the limit for logging in, please try again in 20 minutes')
-      }
+      // if (rateLimitCheck.limitReached === true) {
+      //   throw new GraphQLError(
+      //     'You have reached the limit of loggin in, please try again in 20 minutes'
+      //   )
+      // }
 
       if (!user) {
         throw new GraphQLError('Username or password does not match')
@@ -958,10 +974,7 @@ const resolvers = {
         throw new GraphQLError('Username or password does not match')
       }
 
-      const refreshToken = signRefreshToken(user)
-
-      context.req.session.refresh_token = refreshToken
-      context.req.session.save()
+      context.req.session.refresh_token = signRefreshToken(user)
 
       const userSection = await Sections.findOne({
         where: { id: user.section_id },
@@ -988,7 +1001,7 @@ const resolvers = {
       else return false
     },
     logout: async (_, __, context) => {
-      const { res, data: user, req } = authMiddleware(context)
+      const { req, res, data: user } = authMiddleware(context)
 
       const actionUser = await Users.findOne({ where: { id: user.user_id } })
 
@@ -1072,7 +1085,7 @@ const resolvers = {
           })
 
           const blameSection = await Sections.findOne({
-            where: { id: blame.section_id },
+            where: { id: blame.id },
           })
 
           await UserLogs.create({
@@ -1170,7 +1183,7 @@ const resolvers = {
         })
 
         const blameSection = await Sections.findOne({
-          where: { id: blame.section_id },
+          where: { id: blame.id },
         })
 
         await UserLogs.create({
@@ -1203,12 +1216,14 @@ const resolvers = {
 
       if (group_picture) {
         const { createReadStream, filename } = await group_picture
-        let filepath = '/DNCAFILES/grouppfp'
+        let filepath = '../files/grouppfp'
         let newFileName = `${uuid()} ${filename}`
 
         await new Promise((res) =>
           createReadStream()
-            .pipe(createWriteStream(path.join(filepath, newFileName)))
+            .pipe(
+              createWriteStream(path.join('__dirname', filepath, newFileName))
+            )
             .on('close', res)
         )
         await Groups.update(
@@ -1224,7 +1239,7 @@ const resolvers = {
       const actionUser = await Users.findOne({ where: { id: user.user_id } })
 
       const actionUserSection = await Sections.findOne({
-        where: { id: actionUser.section_id },
+        where: { id: actionUser.id },
       })
 
       await UserLogs.create({
@@ -1271,7 +1286,7 @@ const resolvers = {
       await UserGroups.destroy({ where: { group_id, user_id } })
 
       const blameSection = await Sections.findOne({
-        where: { id: blame.section_id },
+        where: { id: blame.id },
       })
 
       await UserLogs.create({
@@ -1325,12 +1340,12 @@ const resolvers = {
 
       if (profile_img) {
         const { createReadStream, filename } = await profile_img
-        let filepath = '/DNCAFILES/pfp'
+        let filepath = '../files/pfp'
         newImage = `${uuid()} ${filename}`
 
         await new Promise((res) =>
           createReadStream()
-            .pipe(createWriteStream(path.join(filepath, newImage)))
+            .pipe(createWriteStream(path.join('__dirname', filepath, newImage)))
             .on('close', res)
         )
       }
@@ -1410,9 +1425,7 @@ const resolvers = {
       if (rolesToDelete.length > 0) {
         deleteRoles = await Promise.all(
           rolesToDelete.map(async (role) => {
-            const deleteRole = await GroupRoles.destroy({
-              where: { id: role },
-            })
+            const deleteRole = await GroupRoles.destroy({ where: { id: role } })
             return deleteRole
           })
         )
@@ -1613,12 +1626,12 @@ const resolvers = {
       let newImage = initialUser.profile_img
       if (userData.profile_img) {
         const { createReadStream, filename } = await userData.profile_img
-        let filepath = '/DNCAFILES/pfp'
+        let filepath = '../files/pfp'
         newImage = `${uuid()} ${filename}`
 
         await new Promise((res) =>
           createReadStream()
-            .pipe(createWriteStream(path.join(filepath, newImage)))
+            .pipe(createWriteStream(path.join('__dirname', filepath, newImage)))
             .on('close', res)
         )
       }

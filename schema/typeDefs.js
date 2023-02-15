@@ -51,6 +51,7 @@ const typeDefs = `
     group_picture: String!
     is_group: String!
     has_threat: Boolean!
+    pm_name: String
   }
 
   type UserGroup {
