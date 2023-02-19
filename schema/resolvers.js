@@ -1088,7 +1088,7 @@ const resolvers = {
           })
 
           const blameSection = await Sections.findOne({
-            where: { id: blame.id },
+            where: { id: blame.section_id },
           })
 
           await UserLogs.create({
@@ -1186,7 +1186,7 @@ const resolvers = {
         })
 
         const blameSection = await Sections.findOne({
-          where: { id: blame.id },
+          where: { id: blame.section_id },
         })
 
         await UserLogs.create({
@@ -1289,7 +1289,7 @@ const resolvers = {
       await UserGroups.destroy({ where: { group_id, user_id } })
 
       const blameSection = await Sections.findOne({
-        where: { id: blame.id },
+        where: { id: blame.section_id },
       })
 
       await UserLogs.create({
